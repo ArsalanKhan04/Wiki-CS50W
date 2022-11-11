@@ -5,11 +5,13 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
+    <h1>Search Result</h1>
 
     <ul>
         {% for entry in entries %}
             <li><a href = "{% url 'page' title=entry %}">{{ entry }}</a></li>
+        {% empty %}
+        <h2>NO RESULTS OF THE FOLLOWING QUERY</h2>
         {% endfor %}
     </ul>
 

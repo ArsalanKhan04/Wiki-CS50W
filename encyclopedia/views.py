@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django import forms
 from . import util
 
 
@@ -16,3 +16,24 @@ def page(request, title):
         "content": util.get_entry(title)
     })
 
+def search(request):
+    if request == "GET":
+        return render(request, "error.html")
+    
+    query = request.POST["q"]
+
+    for entry in util.list_entries():
+        if entry == query:
+            return render(request, "encyclopedia/page.html", {
+                "title" : entry,
+                "content": util.get_entry(entry)
+            })
+
+    searchresult = []
+    for entry in util.list_entries():
+        if query in entry:
+            searchresult.append(entry)
+    return render(request, "encyclopedia/search.html", {
+        "entries": searchresult
+    })
+    
