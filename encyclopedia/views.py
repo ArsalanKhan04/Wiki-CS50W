@@ -9,6 +9,8 @@ class contentForm(forms.Form):
     title = forms.CharField(label="Title")
     content = forms.CharField(label="Content")
 
+class editForm(forms.Form):
+    content = forms.CharField(label="Content")
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -68,5 +70,23 @@ def newpage(request):
 
     return render(request, "encyclopedia/newpage.html", {"form":form, "existing":existing})
     
-def editpage(request):
-    return None
+def editpage(request, title):
+    print(title)
+    if util.get_entry(title) == None:
+        return render(request, "encyclopedia/pagenotfound.html")
+    
+    if request.method == "POST":
+        form = editForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data["content"]
+            util.save_entry(title,content)
+            return HttpResponseRedirect(reverse("page", kwargs={"title":title}))
+    else:
+        form = editForm(initial = {
+            "content": util.get_entry(title)
+        })
+
+    return render(request, "encyclopedia/editpage.html", {
+        "title": title,
+        "form": form
+    })
