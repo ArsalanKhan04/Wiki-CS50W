@@ -3,14 +3,14 @@ from django import forms
 from . import util
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
+import random as rn
 
 class contentForm(forms.Form):
     title = forms.CharField(label="Title")
-    content = forms.CharField(label="Content")
+    content = forms.CharField(label="Content", widget=forms.Textarea)
 
 class editForm(forms.Form):
-    content = forms.CharField(label="Content")
+    content = forms.CharField(label="Content", widget = forms.Textarea)
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -90,3 +90,9 @@ def editpage(request, title):
         "title": title,
         "form": form
     })
+
+def random(request):
+    randomtitle = rn.choice(util.list_entries())
+    return HttpResponseRedirect(reverse("page", kwargs={
+        "title":randomtitle
+    }))
