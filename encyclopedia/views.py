@@ -4,6 +4,7 @@ from . import util
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import random as rn
+from . import convertMark
 
 class contentForm(forms.Form):
     title = forms.CharField(label="Title")
@@ -20,12 +21,12 @@ def index(request):
 
 
 
-def page(request, title):
+def wiki(request, title):
     if util.get_entry(title) == None:
         return render(request, "encyclopedia/pagenotfound.html")
-    return render(request, "encyclopedia/page.html", {
+    return render(request, "encyclopedia/wiki.html", {
         "title" : title,
-        "content": util.get_entry(title)
+        "content": convertMark.convert(util.get_entry(title))
     })
 
 
@@ -39,7 +40,7 @@ def search(request):
 
     for entry in util.list_entries():
         if entry == query:
-            return HttpResponseRedirect(reverse("page", kwargs={"title":entry}))
+            return HttpResponseRedirect(reverse("wiki", kwargs={"title":entry}))
 
     searchresult = []
     for entry in util.list_entries():
@@ -63,7 +64,7 @@ def newpage(request):
                 existing = True
             else:
                 util.save_entry(title,content)
-                return HttpResponseRedirect(reverse("page", kwargs={"title":title}))
+                return HttpResponseRedirect(reverse("wiki", kwargs={"title":title}))
     else:
         form = contentForm()
 
@@ -80,10 +81,10 @@ def editpage(request, title):
         if form.is_valid():
             content = form.cleaned_data["content"]
             util.save_entry(title,content)
-            return HttpResponseRedirect(reverse("page", kwargs={"title":title}))
+            return HttpResponseRedirect(reverse("wiki", kwargs={"title":title}))
     else:
         form = editForm(initial = {
-            "content": util.get_entry(title)
+            "content": convertMark.convert(util.get_entry(title))
         })
 
     return render(request, "encyclopedia/editpage.html", {
@@ -93,6 +94,6 @@ def editpage(request, title):
 
 def random(request):
     randomtitle = rn.choice(util.list_entries())
-    return HttpResponseRedirect(reverse("page", kwargs={
+    return HttpResponseRedirect(reverse("wiki", kwargs={
         "title":randomtitle
     }))

@@ -35,3 +35,25 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+def convert(content):
+    reheads = []
+    alphaspace = re.compile(r"[\w ]+")
+    for i in range(1, 7):
+        reheads.append(re.compile(i*"#" + " \w+"))
+
+    for i, rehead in enumerate(reheads):
+        i = i + 1
+        replacement = rehead.findall("content")
+
+        for each in replacement:
+            newheading = alphaspace.match(each)
+            newheading = "<h" + i + ">" + newheading + "</h" + i + ">"
+
+
+    rebold = re.compile(r"\*\*[\w\s]+\*\*")
+    relink = re.compile(r"\[[\w ]+\([\w ]+\)\]")
+    reUlist = re.compile(r"[-\*] [\w ]+\n")
+    reOlist = re.compile(r"\d [\w ]+\n")
+    return 0
+
